@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - School Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .sidebar {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            min-height: 100vh;
+            color: white;
+            position: fixed;
+            width: 250px;
+            z-index: 1000;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px 10px;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white !important;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 15px 20px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            border-radius: 8px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            border: none;
+            font-weight: 600;
+        }
+        .table td {
+            border: none;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="p-3">
+            <h4 class="text-center mb-4">
+                <i class="fas fa-chalkboard-teacher me-2"></i>
+                Teacher Portal
+            </h4>
+            
+            <div class="user-info text-center">
+                <i class="fas fa-user-circle fa-3x mb-2"></i>
+                <div id="teacherName">Loading...</div>
+                <small id="teacherRole">Teacher</small>
+            </div>
+
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('students')">
+                        <i class="fas fa-user-graduate me-2"></i>My Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('marks')">
+                        <i class="fas fa-clipboard-list me-2"></i>Marks Entry
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('profile')">
+                        <i class="fas fa-user-cog me-2"></i>Profile
+                    </a>
+                </li>
+                <li class="nav-item mt-4">
+                    <a class="nav-link" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Teacher Dashboard</h2>
+                <div class="text-muted">
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="totalStudents">0</div>
+                        <div>Total Students</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="totalClasses">0</div>
+                        <div>Classes Assigned</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="totalSubjects">0</div>
+                        <div>Subjects</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-number" id="pendingMarks">0</div>
+                        <div>Pending Marks</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Activities</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush" id="recentActivities">
+                                <div class="list-group-item">
+                                    <i class="fas fa-info-circle text-info me-2"></i>
+                                    Welcome to the Teacher Dashboard
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary" onclick="showSection('marks')">
+                                    <i class="fas fa-plus me-2"></i>Add Marks
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="showSection('students')">
+                                    <i class="fas fa-users me-2"></i>View Students
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Section -->
+        <div id="students" class="content-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>My Students</h2>
+                <div>
+                    <select class="form-select" id="classFilter" onchange="filterStudents()">
+                        <option value="">All Classes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>Name</th>
+                                    <th>Roll Number</th>
+                                    <th>Class</th>
+                                    <th>Section</th>
+                                    <th>Father's Name</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTable">
+                                <tr>
+                                    <td colspan="7" class="text-center">Loading students...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marks Entry Section -->
+        <div id="marks" class="content-section">
+            <h2 class="mb-4">Marks Entry</h2>
+
+            <!-- Class/Section Selection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Select Class & Section</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Class</label>
+                                <select class="form-select" id="teacherClassSelect" onchange="loadTeacherSections()">
+                                    <option value="">Choose Class</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Section</label>
+                                <select class="form-select" id="teacherSectionSelect" onchange="loadTeacherStudents()">
+                                    <option value="">Choose Section</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Subject</label>
+                                <select class="form-select" id="teacherSubjectSelect" onchange="showMarksEntryForm()">
+                                    <option value="">Choose Subject</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marks Entry Form -->
+            <div class="card" id="marksEntryCard" style="display: none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Marks Entry - <span id="selectedClassSectionSubject"></span></h5>
+                    <button class="btn btn-success" onclick="saveAllTeacherMarks()">
+                        <i class="fas fa-save me-2"></i>Save All Marks
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="teacherMarksTable">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Roll No.</th>
+                                    <th>Student Name</th>
+                                    <th>Formative (Max: 20)</th>
+                                    <th>Summative (Max: 80)</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacherMarksTableBody">
+                                <!-- Student rows will be added dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Marks -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Marks Entry</h5>
+                </div>
+                <div class="card-body">
+                    <div id="recentMarks">
+                        <p class="text-muted">No marks entered yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Profile Section -->
+        <div id="profile" class="content-section">
+            <h2 class="mb-4">Teacher Profile</h2>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Profile Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="profileForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Full Name</label>
+                                            <input type="text" class="form-control" id="profileName" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Username</label>
+                                            <input type="text" class="form-control" id="profileUsername" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="profileEmail" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Role</label>
+                                    <input type="text" class="form-control" value="Teacher" readonly>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Change Password</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="passwordForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Current Password</label>
+                                    <input type="password" class="form-control" id="currentPassword" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="newPassword" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Confirm Password</label>
+                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-key me-2"></i>Update Password
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="teacher-dashboard.js"></script>
+</body>
+</html>
